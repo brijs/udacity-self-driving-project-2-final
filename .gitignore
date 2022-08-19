@@ -1,0 +1,7 @@
+.vscode/
+dataset/
+.student_bashrc
+results/
+code.sh
+img/
+**/*.pyc
