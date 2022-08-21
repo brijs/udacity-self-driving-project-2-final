@@ -34,21 +34,28 @@ class Track:
         # unassigned measurement transformed from sensor to vehicle coordinates
         # - initialize track state and track score with appropriate values
         ############
+        dim_meas = 3  # meas.dim_meas? does it work for camera
+        dim_state = params.dim_state
 
-        self.x = np.matrix([[49.53980697],
-                        [ 3.41006279],
-                        [ 0.91790581],
-                        [ 0.        ],
-                        [ 0.        ],
-                        [ 0.        ]])
-        self.P = np.matrix([[9.0e-02, 0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00],
-                        [0.0e+00, 9.0e-02, 0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00],
-                        [0.0e+00, 0.0e+00, 6.4e-03, 0.0e+00, 0.0e+00, 0.0e+00],
-                        [0.0e+00, 0.0e+00, 0.0e+00, 2.5e+03, 0.0e+00, 0.0e+00],
-                        [0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00, 2.5e+03, 0.0e+00],
-                        [0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00, 0.0e+00, 2.5e+01]])
-        self.state = 'confirmed'
-        self.score = 0
+        pos_sens = np.ones((dim_meas + 1, 1)) # (3+1,1) for lidar; (2+1,1) for Camera
+        pos_sens[0:dim_meas] = meas.z[0:dim_meas]
+
+        # sens_to_veh: shape (4,4)
+        pos_veh = meas.sensor.sens_to_veh * pos_sens
+
+        self.x = np.zeros((dim_state,1))
+        self.x[0:dim_meas] = pos_veh[0:dim_meas]
+
+        P_pos = M_rot * meas.R * np.transpose(M_rot)
+        P_vel = np.matrix([[params.sigma_p44**2, 0, 0],
+                           [0, params.sigma_p55**2, 0],
+                           [0, 0, params.sigma_p66**2]])
+        self.P = np.zeros((6, 6))
+        self.P[0:3, 0:3] = P_pos
+        self.P[3:6, 3:6] = P_vel
+
+        self.state = 'initialized'
+        self.score = 1. / params.window
         
         ############
         # END student code
@@ -101,15 +108,26 @@ class Trackmanagement:
         ############
         
         # decrease score for unassigned tracks
+        # [unassigned_tracks]: In a given association cycle, no measurement got associated with
+        #   these tracks
         for i in unassigned_tracks:
             track = self.track_list[i]
-            # check visibility    
+            # check visibility; Only update score if it's in sensor's FOV   
             if meas_list: # if not empty
+                # Note: checking meas[0].sensor works here because the pased in measurements 
+                # are of the same type i.e either Camera or Lidar. See loop_over_dataset.py
+                # calls to association.associate_and_update() 
                 if meas_list[0].sensor.in_fov(track.x):
                     # your code goes here
-                    pass 
+                    track.score =  max (0., track.score - 1. / window)
 
-        # delete old tracks   
+            # delete "old" tracks 
+            Pxx, Pyy = track.P[0,0], track.P[1,1]
+
+            if (Pxx >= params.max_P or Pyy >= params.max_P or # Position uncertainty too high
+                    (track.score <= params.delete_threshold and track.state == 'confirmed')):
+                self.delete_track(track)
+
 
         ############
         # END student code
@@ -139,6 +157,17 @@ class Trackmanagement:
         # - increase track score
         # - set track state to 'tentative' or 'confirmed'
         ############
+
+        # [updated_track]: This track was associated with a meas, in the association cycle
+        #  and KF.update() was called for this track in this cycle
+
+        track.score = min(1., track.score + 1. / params.window)
+
+
+        if track.score >= params.confirmed_threshold:
+            track.state = 'confirmed'
+        elif track.score >= params.tentative_threshold:
+            track.state = 'tentative'
 
         pass
         
