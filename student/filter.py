@@ -52,6 +52,8 @@ class Filter:
         q1 = ((dt**3)/3) * q 
         q2 = ((dt**2)/2) * q 
         q3 = dt * q 
+
+        # Q.Shape = (dim_state, dim_state)
         return np.matrix([[q1, 0, 0, q2, 0, 0],
                           [0, q1, 0, 0, q2, 0],
                           [0, 0, q1, 0, 0, q2],

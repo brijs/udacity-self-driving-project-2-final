@@ -13,3 +13,19 @@ Please use this starter template to answer the following questions:
 
 ### 4. Can you think of ways to improve your tracking results in the future?
 
+
+
+## Step 1: Extended Kalman Filter
+
+The following were implemented as part of the EKF
+- Covariance matrix: `Q`
+- State Transition Model: `F` 
+- Measurement noise & covariance matrix: `gamma`, `S`
+- `predict()` and `update()` methods
+
+The output generated for a simple single-target scenario is shown below. 
+The computed RMSE is **0.32**.
+
+<img src="screenshots/step1_rmse.jpg" width="450"></img>
+<img src="screenshots/step1_single_track_plot.jpg" width="350"></img>
+<figcaption>Figure 1: Single Track Plot & RMSE</figcaption>
