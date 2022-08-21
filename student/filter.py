@@ -73,6 +73,7 @@ class Filter:
         F = self.F()
         Q = self.Q()
 
+        # F is same as f since it's linear
         predicted_x = F * x
         predicted_P = F * P * np.transpose(F) + Q
 
@@ -113,7 +114,10 @@ class Filter:
         ############
 
         # compute residual in sensor coordinate space. residual = measured - predicted
-        return meas.z - meas.sensor.get_hx(track.x)
+        # Gamma: (3,1) for Lidar, and (2,1) for Camera Sensor
+        # also note: h function is used here for mapping x to sensor space
+        g = meas.z - meas.sensor.get_hx(track.x)
+        return g
         
         ############
         # END student code
