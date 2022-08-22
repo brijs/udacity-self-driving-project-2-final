@@ -56,7 +56,7 @@ See [below](#step-1-extended-kalman-filter) for implementation summary & results
 
 For the purposes of Tracking, fusing measurements from both sensors should help with improving the Tracking performance. Using multiple sensors combines their individual strengths (performance in various conditions such as environments, lighting, occlusions, weather, slope of roads & terrain etc), and provides better reliability in general.
  
-For the specific Sequence and range of frames that we processed, the RMSE for all 3 Tracks was reduced when both Lidar and Camera measurements were used (vs when only Lidar was used).
+For the specific Sequence and range of frames that we processed, the RMSE for most Tracks (2 out of 3) was reduced when both Lidar and Camera measurements were used (vs when only Lidar was used).
 
 ### 3. Which challenges will a sensor fusion system face in real-life scenarios? Did you see any of these challenges in the project?
 
@@ -119,6 +119,10 @@ The relevant camera related functions are implemented
  - Sensor's `in_fov()` method (both camera and lidar)
  - Camera Sensor's `get_hx()` function returning non-linear vector
  - Initializing Camera measurement's `z` and `R` values
+
+<img src="screenshots/step4_rmse.jpg" width="600"></img>
+<figcaption>Figure 4: Multi Track RMSE with Sensor Fusion</figcaption>
+
 
 The output video of the final run is shown below:
 
