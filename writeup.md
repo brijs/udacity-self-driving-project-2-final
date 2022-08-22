@@ -59,4 +59,13 @@ Relevant notes related to the implementation:
 
 
 ## Step 4: Sensor Fusion - with Camera
-![](screenshots/step4_video.mp4)
+
+The relevant camera related functions are implemented
+ - Sensor's `in_fov()` method (both camera and lidar)
+ - Camera Sensor's `get_hx()` function returning non-linear vector
+ - Initializing Camera measurement's `z` and `R` values
+
+The output video of the final run is shown below:
+
+https://user-images.githubusercontent.com/1574336/185986568-5041652d-2066-4aee-b14a-1e79002dbbab.mp4
+<figcaption>Video 1: Multi Track (3) being tracked</figcaption>
