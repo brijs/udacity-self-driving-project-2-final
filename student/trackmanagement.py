@@ -119,13 +119,15 @@ class Trackmanagement:
                 # calls to association.associate_and_update() 
                 if meas_list[0].sensor.in_fov(track.x):
                     # your code goes here
-                    track.score =  max (0., track.score - 1. / window)
+                    track.score =  max (0., track.score - 1. / params.window)
 
-            # delete "old" tracks 
+        # delete "old" tracks 
+        for track in self.track_list:
             Pxx, Pyy = track.P[0,0], track.P[1,1]
 
             if (Pxx >= params.max_P or Pyy >= params.max_P or # Position uncertainty too high
-                    (track.score <= params.delete_threshold and track.state == 'confirmed')):
+                    (track.score <= params.delete_threshold and track.state == 'confirmed') or
+                    (track.score <= params.delete_threshold_tentative and track.state in ('tentative','initialized'))):
                 self.delete_track(track)
 
 
