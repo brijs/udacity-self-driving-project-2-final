@@ -47,8 +47,17 @@ class Sensor:
         # TODO Step 4: implement a function that returns True if x lies in the sensor's field of view, 
         # otherwise False.
         ############
-
-        return True
+        pos_veh = np.ones((4,1))
+        pos_veh[0:3] = x[0:3]
+        pos_sens = self.veh_to_sens * pos_veh
+        p_x, p_y = pos_sens[0], pos_sens[1]
+        
+        if p_x <= 0:
+            return False
+        
+        angle = np.arctan(p_y/p_x)
+                    
+        return angle > self.fov[0] and angle < self.fov[1] 
         
         ############
         # END student code
@@ -71,7 +80,21 @@ class Sensor:
             # - return h(x)
             ############
 
-            pass
+            hx = np.matrix(np.zeros((self.dim_meas, 1)))
+            # Veh => Sensor coord
+            pos_veh = np.ones((4, 1)) # homogeneous coordinates
+            pos_veh[0:3] = x[0:3] 
+            pos_sens = self.veh_to_sens*pos_veh 
+
+            # Sensor => Image coord
+            pos_sens_x, pos_sens_y, pos_sens_z = pos_sens[0], pos_sens[1], pos_sens[2]
+            if pos_sens_x == 0:
+                raise NameError('Jacobian not defined for x[0]=0')
+            else:
+                hx[0,0] = self.c_i - self.f_i * pos_sens_y / pos_sens_x
+                hx[1,0] = self.c_j - self.f_j * pos_sens_z / pos_sens_x
+            
+            return hx
         
             ############
             # END student code
@@ -115,7 +138,7 @@ class Sensor:
         # TODO Step 4: remove restriction to lidar in order to include camera as well
         ############
         
-        if self.name == 'lidar':
+        if self.name == 'lidar' or self.name == 'camera':
             meas = Measurement(num_frame, z, self)
             meas_list.append(meas)
         return meas_list
@@ -154,8 +177,14 @@ class Measurement:
             ############
             # TODO Step 4: initialize camera measurement including z, R, and sensor 
             ############
+            self.sensor = sensor
 
-            pass
+            self.z = np.zeros((sensor.dim_meas,1)) # measurement vector
+            self.z[0] = z[0]
+            self.z[1] = z[1]
+
+            self.R = np.matrix([[params.sigma_cam_i**2, 0],
+                                [0, params.sigma_cam_j**2]])
         
             ############
             # END student code

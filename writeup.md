@@ -56,3 +56,6 @@ Relevant notes related to the implementation:
 
 <img src="screenshots/step3_rmse.jpg" width="600"></img>
 <figcaption>Figure 3: Multi Track RMSE</figcaption>
+
+
+## Step 4: Sensor Fusion - with Camera
