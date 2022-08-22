@@ -112,8 +112,8 @@ class Association:
         # TODO Step 3: calculate and return Mahalanobis distance
         ############
         H = meas.sensor.get_H(track.x)
-        gamma = meas.z - meas.sensor.get_hx(track.x)
-        S = H  * track.P * H.transpose() + meas.R
+        gamma = KF.gamma(track, meas) 
+        S = KF.S(track, meas, H)
 
         MHD = gamma.transpose() * np.linalg.inv(S) * gamma # Mahalanobis distance formula
         return MHD
