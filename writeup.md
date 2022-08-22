@@ -50,3 +50,9 @@ Relevant notes related to the implementation:
 
 <img src="screenshots/step2_rmse.jpg" width="600"></img>
 <figcaption>Figure 2: Single Track RMSE</figcaption>
+
+
+## Step 3: Data Association - Measurements to Tracks
+
+<img src="screenshots/step3_rmse.jpg" width="600"></img>
+<figcaption>Figure 3: Multi Track RMSE</figcaption>
