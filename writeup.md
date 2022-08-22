@@ -59,3 +59,4 @@ Relevant notes related to the implementation:
 
 
 ## Step 4: Sensor Fusion - with Camera
+![](screenshots/step4_video.mp4)
